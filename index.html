@@ -91,6 +91,8 @@ document.querySelectorAll('[data-category]').forEach(chip=>chip.addEventListener
 // Clickable detail gallery
 const gallery=document.querySelector('.gallery-main img');
 if(gallery){const caption=document.createElement('span');caption.className='gallery-caption';caption.textContent='01 / 03 — CAMERA KIT';gallery.parentElement.append(caption);document.querySelectorAll('.thumbs img').forEach((thumb,index)=>{if(index===0)thumb.classList.add('active');thumb.addEventListener('click',()=>{gallery.classList.add('changing');setTimeout(()=>{gallery.src=thumb.src.replace('w=300','w=1100');gallery.alt=thumb.alt;caption.textContent=`0${index+1} / 03 — ${thumb.alt.toUpperCase()}`;gallery.classList.remove('changing')},180);document.querySelectorAll('.thumbs img').forEach(x=>x.classList.remove('active'));thumb.classList.add('active')})})}
+// Clean filter label: keep pickup location as plain text.
+document.querySelectorAll('.filter').forEach(button=>{if(button.textContent.includes('Pickup location'))button.textContent='Pickup location'});
 // Functional explore filters + typing search
 const exploreGrid=document.getElementById('explore-grid'), filters=[...document.querySelectorAll('.filter')], exploreInput=document.querySelector('#explore .search input');let filterMode='all';
 function renderExplore(){let list=[...items],q=(exploreInput.value||'').toLowerCase();if(q)list=list.filter(i=>(i.name+i.cat+i.loc).toLowerCase().includes(q));if(filterMode==='shared')list.sort((a,b)=>b.shared-a.shared);if(filterMode==='available')list=list.filter(i=>i.shared>0);animateGrid(exploreGrid,list.length?list.map(card).join(''):'<div class="search-results-empty">Nothing matched that yet. Try “camera,” “tool,” or “art.”</div>')}
