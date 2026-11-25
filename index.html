@@ -27,6 +27,24 @@
     .nav{transition:height .42s cubic-bezier(.16,1,.3,1),padding .42s cubic-bezier(.16,1,.3,1),background-color .3s ease}.nav .brand,.nav .profile{transition:opacity .25s ease,width .4s cubic-bezier(.16,1,.3,1),margin .4s cubic-bezier(.16,1,.3,1)}.reshare-logo{display:block;height:34px;width:auto}.footer .reshare-logo{height:28px;filter:brightness(2.1)}@media(max-width:760px){.reshare-logo{height:26px}}
   .nav{background:#f8f7f2;-webkit-backdrop-filter:none;backdrop-filter:none}
   .nav{transition:background-color .45s cubic-bezier(.16,1,.3,1)}.nav .brand,.nav .profile{transition:opacity .4s cubic-bezier(.16,1,.3,1),visibility 0s linear 0s}.navlinks{transition:box-shadow .45s cubic-bezier(.16,1,.3,1)}.shell .nav.compact{background:transparent;pointer-events:none}.nav.compact .brand,.nav.compact .profile{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .4s cubic-bezier(.16,1,.3,1),visibility 0s linear .4s}.nav.compact .navlinks{pointer-events:auto;box-shadow:0 8px 28px rgba(16,18,20,.14)}
+  
+    /* Smoothness & interaction polish */
+    :root{--ease:cubic-bezier(.16,1,.3,1)}
+    .view.active{animation:viewIn .55s var(--ease) both}@keyframes viewIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+    .reveal{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease),transform .8s var(--ease)}.reveal.is-visible{opacity:1;transform:none}
+    .success.show{animation:viewIn .55s var(--ease) both}
+    .modal-card{animation:cardFade .4s ease backwards}@keyframes cardFade{from{opacity:0}}
+    .profile-panel{display:block!important;visibility:hidden;pointer-events:none;opacity:0;transform:translateY(-12px) scale(.96);transform-origin:top right;transition:opacity .3s ease,transform .45s var(--ease),visibility 0s linear .45s}.profile-panel.open{visibility:visible;pointer-events:auto;opacity:1;transform:none;transition-delay:0s}
+    .button,.chip,.filter,.choice,.tabs button,.profile,.borrow-step,.gallery-arrow,.modal-close,.detail-toggle,.catalog-item{transition:background-color .28s ease,color .28s ease,border-color .28s ease,transform .22s var(--ease),box-shadow .3s ease!important}
+    button:active:hover,button:active{transform:scale(.96)!important}
+    .item{transition:transform .3s var(--ease)}.item:active{transform:scale(.985)}
+    .field input,.field select,.field textarea,.catalog-search input,.custom-pickup{transition:border-color .25s ease,box-shadow .3s var(--ease)}
+    .field input:focus,.field select:focus,.field textarea:focus,.catalog-search input:focus,.custom-pickup:focus{outline:0;border-color:var(--blue);box-shadow:0 0 0 4px rgba(47,179,255,.25)}
+    .scroll-progress{position:fixed;top:0;left:0;width:100%;height:3px;background:var(--blue);transform-origin:left;transform:scaleX(var(--p,0));z-index:60;pointer-events:none;transition:transform .12s linear}
+    .navlinks{position:relative}.navlinks button{position:relative;z-index:1}
+    .nav-indicator{position:absolute;left:0;top:0;border-radius:999px;background:var(--ink);pointer-events:none;z-index:0;transition:transform .5s var(--ease),width .5s var(--ease),height .5s var(--ease)}
+    .navlinks button,.navlinks button:hover,.navlinks button.active{background:transparent!important;color:#333!important}.navlinks button[data-under]{color:#fff!important}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.reveal{opacity:1;transform:none}}
   </style>
 </head>
 <body><main class="shell"><div class="topline"></div>
@@ -77,7 +95,7 @@ items.forEach(item=>item.gallery=[item.img,item.img,item.img]);
 function card(i){return `<article class="item" onclick="openItem(${items.indexOf(i)})"><div class="item-img"><img src="${i.img}" alt="${i.name}"><span class="tag">AVAILABLE</span></div><div class="item-info"><div class="item-top"><h3>${i.name}</h3><span class="small">${i.condition}</span></div><p class="small">${i.cat} · ${i.loc}</p><div class="shared">↻ SHARED ${i.shared} TIMES · GIVE IT ANOTHER USE</div></div></article>`}
 document.getElementById('feature-grid').innerHTML=items.slice(0,3).map(card).join('');document.getElementById('explore-grid').innerHTML=items.map(card).join('');
 function go(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.querySelectorAll('.navlinks button').forEach(b=>b.classList.remove('active'));document.getElementById(id).classList.add('active');let map={home:0,explore:1,share:2,impact:3,myloop:4};if(map[id]!==undefined)document.querySelectorAll('.navlinks button')[map[id]].classList.add('active');window.scrollTo({top:0,behavior:'smooth'})}
-let viewHistory=[],forwardHistory=[];const baseGo=go;go=function(id,fromHistory=false){if(id==='share'&&!fromHistory){openShareModal();return}if(id==='return'&&!fromHistory){openReturnModal();return}const current=document.querySelector('.view.active')?.id||'home';if(!fromHistory&&current!==id){viewHistory.push(current);forwardHistory=[]}baseGo(id);updatePageArrows()};function updatePageArrows(){const back=document.getElementById('back-button'),forward=document.getElementById('forward-button');if(back)back.disabled=!viewHistory.length;if(forward)forward.disabled=!forwardHistory.length}function goBack(){if(!viewHistory.length)return;const current=document.querySelector('.view.active')?.id,previous=viewHistory.pop();if(current)forwardHistory.push(current);go(previous,true)}function goForward(){if(!forwardHistory.length)return;const current=document.querySelector('.view.active')?.id,next=forwardHistory.pop();if(current)viewHistory.push(current);go(next,true)}updatePageArrows();
+let viewHistory=[],forwardHistory=[];const baseGo=go;go=function(id,fromHistory=false){if(id==='share'&&!fromHistory){openShareModal();return}if(id==='return'&&!fromHistory){openReturnModal();return}const current=document.querySelector('.view.active')?.id||'home';if(!fromHistory&&current!==id){viewHistory.push(current);forwardHistory=[]}baseGo(id);window.scrollTo({top:0,behavior:'instant'});updatePageArrows()};function updatePageArrows(){const back=document.getElementById('back-button'),forward=document.getElementById('forward-button');if(back)back.disabled=!viewHistory.length;if(forward)forward.disabled=!forwardHistory.length}function goBack(){if(!viewHistory.length)return;const current=document.querySelector('.view.active')?.id,previous=viewHistory.pop();if(current)forwardHistory.push(current);go(previous,true)}function goForward(){if(!forwardHistory.length)return;const current=document.querySelector('.view.active')?.id,next=forwardHistory.pop();if(current)viewHistory.push(current);go(next,true)}updatePageArrows();
 const heroProductImage=document.querySelector('.hero-art img');let heroIndex=0;if(heroProductImage){setInterval(()=>{heroIndex=(heroIndex+1)%items.length;heroProductImage.classList.add('hero-changing');setTimeout(()=>{heroProductImage.src=items[heroIndex].gallery[0];heroProductImage.alt=items[heroIndex].name;heroProductImage.classList.remove('hero-changing')},420)},4300)}
 function showRequestSuccess(){document.querySelector('#request .formcard').style.display='none';document.getElementById('request-success').classList.add('show')}function showShareSuccess(){document.querySelector('#share .formcard').style.display='none';document.getElementById('share-success').classList.add('show')}function selectChoice(x){document.querySelectorAll('.choice').forEach(b=>b.classList.remove('selected'));x.classList.add('selected')}function showReturnSuccess(){document.getElementById('return-card').style.display='none';document.getElementById('return-success').classList.add('show')}
 const cursor=document.getElementById('cursor'), cursorLabel=document.getElementById('cursor-label');
@@ -146,4 +164,23 @@ const profileTrigger=document.getElementById('profile-trigger'),profilePanel=doc
 function closeProfile(){profilePanel.classList.remove('open');profileTrigger.classList.remove('profile-triggering')}
 function countProfileMetrics(){profilePanel.querySelectorAll('.profile-metric strong').forEach(el=>{const end=Number(el.textContent);el.textContent='0';el.classList.add('counting');const start=performance.now(),tick=now=>{const progress=Math.min(1,(now-start)/550);el.textContent=Math.round(end*progress);if(progress<1)requestAnimationFrame(tick);else{el.textContent=end;el.classList.remove('counting')}};requestAnimationFrame(tick)})}profileTrigger.addEventListener('click',()=>{const opening=!profilePanel.classList.contains('open');profilePanel.classList.toggle('open');if(opening)countProfileMetrics();profileTrigger.classList.add('profile-triggering');setTimeout(()=>profileTrigger.classList.remove('profile-triggering'),580)});profilePanel.querySelector('.profile-close').addEventListener('click',closeProfile);document.addEventListener('click',e=>{if(!profilePanel.contains(e.target)&&!profileTrigger.contains(e.target))closeProfile()});
 siteNav.classList.toggle('compact',window.scrollY>60);window.addEventListener('scroll',()=>siteNav.classList.toggle('compact',window.scrollY>60),{passive:true});
+
+// Smooth interaction layer: sliding nav indicator, scroll reveals, scroll progress
+(function(){
+const nl=document.querySelector('.navlinks');
+if(nl){const ind=document.createElement('span');ind.className='nav-indicator';nl.prepend(ind);
+const btns=()=>[...nl.querySelectorAll('button')],active=()=>nl.querySelector('button.active')||btns()[0];
+function move(btn,instant){if(!btn)return;ind.style.transition=instant?'none':'';ind.style.width=btn.offsetWidth+'px';ind.style.height=btn.offsetHeight+'px';ind.style.transform=`translate(${btn.offsetLeft}px,${btn.offsetTop}px)`;btns().forEach(b=>b.toggleAttribute('data-under',b===btn));if(instant){ind.offsetWidth;ind.style.transition=''}}
+btns().forEach(b=>b.addEventListener('pointerenter',()=>move(b)));
+nl.addEventListener('pointerleave',()=>move(active()));
+new MutationObserver(()=>move(active())).observe(nl,{attributes:true,subtree:true,attributeFilter:['class']});
+window.addEventListener('resize',()=>move(active(),true));
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>move(active(),true));
+move(active(),true)}
+const targets=document.querySelectorAll('.section,.pagehead,.dashboard,.formwrap,.detail');
+if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('is-visible');io.unobserve(e.target)}}),{threshold:.1,rootMargin:'0px 0px -6% 0px'});targets.forEach(t=>{t.classList.add('reveal');io.observe(t)})}
+const bar=document.createElement('div');bar.className='scroll-progress';document.body.append(bar);
+const setProgress=()=>{const h=document.documentElement.scrollHeight-innerHeight;document.documentElement.style.setProperty('--p',h>0?Math.min(1,scrollY/h):0)};
+addEventListener('scroll',setProgress,{passive:true});addEventListener('resize',setProgress);setProgress();
+})();
 </script></body></html>
