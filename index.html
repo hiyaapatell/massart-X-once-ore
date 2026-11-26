@@ -76,10 +76,28 @@
     .map-address{margin:8px 0 0;color:#6b665c}.map-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}.map-actions .button{flex:1 1 180px}
     @media(max-width:760px){.pickup-map{height:320px}}
   .reshare-mark{display:block;margin:0 auto;height:60px;width:auto}.return-card .reshare-mark{margin:0 auto}
+  
+    /* Sleek floating header: one slim rounded bar, plain centered links, utilities on the right */
+    .shell .nav{position:sticky;top:10px;margin:10px 16px 0;height:64px;padding:0 28px;border-radius:18px;background:#f0efeb;border:0;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:0 0 0 rgba(16,18,20,0);transition:box-shadow .45s var(--ease)}
+    .shell .nav.is-stuck{box-shadow:0 10px 30px rgba(16,18,20,.09)}
+    .shell .nav .brand{justify-self:start}
+    .shell .nav .navlinks{justify-self:center;background:none;padding:0;border-radius:0;gap:4px;width:auto;height:auto;flex:none;box-shadow:none}
+    .shell .nav .navlinks button{font-size:15px;font-weight:500;letter-spacing:-.005em;color:var(--ink)!important;background:transparent!important;padding:10px 14px;border-radius:0;position:relative}
+    .shell .nav .navlinks button::after{content:'';position:absolute;left:14px;right:14px;bottom:3px;height:2px;border-radius:2px;background:var(--ink);transform:scaleX(0);transform-origin:left center;transition:transform .4s var(--ease)}
+    .shell .nav .navlinks button:hover::after,.shell .nav .navlinks button.active::after{transform:scaleX(1)}
+    .nav-indicator{display:none!important}
+    .nav-right{justify-self:end;display:flex;align-items:center;gap:20px}
+    .nav-search{display:flex;align-items:center;gap:8px;border:0;background:none;padding:8px 2px;font-size:15px;font-weight:500;color:var(--ink);cursor:pointer;transition:color .25s ease}
+    .shell .nav .nav-search:hover{background:transparent!important;color:var(--green)!important}
+    .shell .nav .profile{width:36px;height:36px;font-size:13px}
+    .shell .nav .massart{font-size:10px}
+    .profile-panel{top:86px;right:28px}
+    @media(max-width:760px){.shell .nav{grid-template-columns:1fr auto;margin:8px;padding:0 16px;height:58px;top:8px}.shell .nav .navlinks{display:none}.nav-search span{display:none}.nav-right{gap:12px}.profile-panel{right:12px;top:76px}}
+  .shell .nav::before{content:'';position:fixed;top:0;left:0;right:0;height:10px;background:var(--paper);z-index:-1;pointer-events:none}
   </style>
 </head>
 <body><main class="shell"><div class="topline"></div>
-  <nav class="nav"><div class="brand"><img class="reshare-logo" src="reshare-logo.svg" alt="ReShare"><span class="massart"><span>MASSART</span><span>COMMUNITY</span></span></div><div class="navlinks"><button class="active" onclick="go('home')">Home</button><button onclick="go('explore')">Explore</button><button onclick="go('share')">Share an Item</button><button onclick="go('impact')">Our Impact</button><button onclick="go('myloop')">My Once More</button></div><button id="profile-trigger" class="profile" aria-label="Open Hiya's profile">HP</button></nav>
+  <nav class="nav"><div class="brand"><img class="reshare-logo" src="reshare-logo.svg" alt="ReShare"><span class="massart"><span>MASSART</span><span>COMMUNITY</span></span></div><div class="navlinks"><button class="active" onclick="go('home')">Home</button><button onclick="go('explore')">Explore</button><button onclick="go('share')">Share an Item</button><button onclick="go('impact')">Our Impact</button><button onclick="go('myloop')">My Once More</button></div><div class="nav-right"><button class="nav-search" onclick="openSearchModal()" aria-label="Search items"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span>Search</span></button><button id="profile-trigger" class="profile" aria-label="Open Hiya's profile">HP</button></div></nav>
   <aside id="profile-panel" class="profile-panel" aria-label="Hiya's Once More profile"><button class="profile-close" aria-label="Close profile">×</button><div class="profile-top"><div class="profile-avatar">HP</div><div><div class="eyebrow">MassArt maker</div><h3>Hiya Patel</h3></div></div><div class="profile-grid"><div class="profile-metric"><strong>2</strong><span>ITEMS BORROWED<br>RIGHT NOW</span></div><div class="profile-metric"><strong>3</strong><span>ITEMS SHARED<br>WITH OTHERS</span></div><div class="profile-metric"><strong>18</strong><span>REUSES YOUR<br>ITEMS ENABLED</span></div><div class="profile-metric"><strong>5</strong><span>SELF-REPORTED<br>PURCHASES AVOIDED</span></div></div><p class="profile-note">Your next return is due Nov 10. Thanks for keeping creative tools in motion.</p><button class="button dark" onclick="closeProfile();go('myloop')">Open My Once More →</button></aside>
 
   <section id="home" class="view active"><div class="hero"><div class="hero-copy"><div class="eyebrow">MassArt's sharing platform</div><h1>Good things are meant to <span class="blue">go around.</span></h1><p class="lead">Borrow what you need. Share what you have. Keep resources in use and out of waste.</p><div class="search"><input placeholder="What do you need for your next project?" onkeydown="if(event.key==='Enter')go('explore')"><button class="button" onclick="go('explore')">Search</button></div><div class="hero-actions"><button class="button dark" onclick="go('explore')">Find Something to Borrow →</button><button class="button light" onclick="go('share')">Share an Item</button></div></div><div class="hero-art"><img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1000&q=85" alt="Camera equipment in a creative studio"><div class="floating"><strong>268</strong>items currently moving between MassArt makers</div></div></div>
@@ -225,7 +243,7 @@ const personalStats=[...document.querySelectorAll('#myloop .stats .stat strong')
 const profileTrigger=document.getElementById('profile-trigger'),profilePanel=document.getElementById('profile-panel');
 function closeProfile(){profilePanel.classList.remove('open');profileTrigger.classList.remove('profile-triggering')}
 function countProfileMetrics(){profilePanel.querySelectorAll('.profile-metric strong').forEach(el=>{const end=Number(el.textContent);el.textContent='0';el.classList.add('counting');const start=performance.now(),tick=now=>{const progress=Math.min(1,(now-start)/550);el.textContent=Math.round(end*progress);if(progress<1)requestAnimationFrame(tick);else{el.textContent=end;el.classList.remove('counting')}};requestAnimationFrame(tick)})}profileTrigger.addEventListener('click',()=>{const opening=!profilePanel.classList.contains('open');profilePanel.classList.toggle('open');if(opening)countProfileMetrics();profileTrigger.classList.add('profile-triggering');setTimeout(()=>profileTrigger.classList.remove('profile-triggering'),580)});profilePanel.querySelector('.profile-close').addEventListener('click',closeProfile);document.addEventListener('click',e=>{if(!profilePanel.contains(e.target)&&!profileTrigger.contains(e.target))closeProfile()});
-siteNav.classList.toggle('compact',window.scrollY>60);window.addEventListener('scroll',()=>siteNav.classList.toggle('compact',window.scrollY>60),{passive:true});
+const stick=()=>siteNav.classList.toggle('is-stuck',window.scrollY>8);stick();window.addEventListener('scroll',stick,{passive:true});
 
 // Smooth interaction layer: sliding nav indicator, scroll reveals, scroll progress
 (function(){
