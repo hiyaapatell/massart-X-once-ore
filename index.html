@@ -54,7 +54,7 @@
     .pickup-map{height:400px;border:0;border-radius:28px;background:#efe9df;box-shadow:inset 0 0 0 1px rgba(16,18,20,.9),0 16px 36px rgba(16,18,20,.1);isolation:isolate;margin:22px 0}
     .map-canvas{position:absolute;inset:0;z-index:0;background:#efe9df;border-radius:28px;overflow:hidden}
     .map-canvas.leaflet-container{font:inherit;background:#efe9df;cursor:grab}.map-canvas.leaflet-dragging{cursor:grabbing}
-    .map-canvas .leaflet-tile-pane{filter:sepia(.3) saturate(.9) hue-rotate(-6deg) brightness(1.03) contrast(.97)}
+    .map-canvas .leaflet-tile-pane{filter:sepia(.22) saturate(.8) hue-rotate(-4deg) brightness(1.04) contrast(.94)}
     .pickup-map .map-canvas img{min-height:0;object-fit:fill}
     .map-canvas .leaflet-control-attribution{background:rgba(255,255,255,.72);font-size:10px;border-radius:8px;margin:0 0 12px 14px;padding:2px 8px;color:#5b574f}.map-canvas .leaflet-control-attribution a{color:#5b574f}
     .map-fallback{height:100%;display:grid;place-items:center;text-align:center;padding:30px;font-weight:700;color:#5b574f}
@@ -105,6 +105,33 @@
     .search .button{border-radius:12px!important}
     .shell .nav .profile,.modal-close,.profile-avatar,.map-zoom button,.page-arrows button{border-radius:12px!important}
     .tabs button.active,.filter.active,.filter.is-selected{border-radius:14px!important}
+  .modal-card img.reshare-mark,.modal-info img.reshare-mark{display:block;width:auto;height:72px;min-height:0;max-height:72px;object-fit:contain;margin:0 auto 24px}
+  
+    /* Circular practice: compact, animated, controllable */
+    .section.cycle-section{padding:56px 7% 50px}
+    .cycle{padding:26px 0 8px!important;gap:6px!important;justify-content:center}
+    .cycle .cycle-node{width:104px;height:104px;padding:12px;font-size:13px;line-height:1.15;display:grid;place-content:center;gap:4px;text-align:center;background:#fff!important;box-shadow:inset 0 0 0 1px var(--ink);cursor:pointer;outline:0;transition:background-color .4s ease,transform .5s var(--ease),box-shadow .4s ease!important}
+    .cycle .cycle-node .step-no{font:700 10px 'DM Mono',monospace;letter-spacing:.08em;color:var(--green)}
+    .cycle .cycle-node.done{background:#d9f0e4!important}
+    .cycle .cycle-node:hover{background:var(--blue)!important;transform:translateY(-4px)!important}
+    .cycle .cycle-node.active-step,.cycle .cycle-node.active-step:hover{background:var(--yellow)!important;transform:scale(1.14)!important;box-shadow:inset 0 0 0 1px var(--ink),0 0 0 7px rgba(255,211,77,.35)!important}
+    .cycle .cycle-node:focus-visible{box-shadow:inset 0 0 0 1px var(--ink),0 0 0 3px var(--blue)!important}
+    .cycle .arrow{font-size:20px;color:#b9c9c1;transition:color .4s ease}.cycle .arrow.on{color:var(--green)}
+    .cycle .arrow.flow{color:var(--green);animation:arrowFlow 1s ease-in-out infinite}@keyframes arrowFlow{0%,100%{transform:translateX(-2px)}50%{transform:translateX(6px)}}
+    .cycle-message{margin-top:6px;min-height:22px}
+    .cycle-controls{display:flex;justify-content:center;gap:8px;margin-top:14px}
+    .cycle-btn{width:40px;height:40px;border:1px solid var(--ink);border-radius:12px!important;background:#fff;font-size:15px;line-height:1;cursor:pointer;display:grid;place-items:center;padding:0}
+    .cycle-track{height:4px;max-width:520px;margin:18px auto 0;border-radius:4px;background:rgba(16,18,20,.12);overflow:hidden}
+    .cycle-fill{display:block;height:100%;width:0;background:var(--green);border-radius:4px;transition:width .6s var(--ease)}
+    @media(max-width:760px){.cycle .cycle-node{width:92px;height:92px;font-size:12px}.section.cycle-section{padding:44px 7%}}
+  
+    /* Activity rows: buttons parallel on the right end */
+    .activity{align-items:center}.activity>div{flex:1;min-width:0}
+    .activity>.button{flex:none;margin-left:auto;min-width:92px;padding:11px 18px!important}
+    /* Impact numbers: replay every time the section is opened */
+    .impact .stat.counted{animation:statRise .7s var(--ease) backwards}@keyframes statRise{from{opacity:0;transform:translateY(18px)}}
+    .impact .stat.counted strong{animation:countPop .6s var(--ease) backwards}
+  .panel .stats .stat strong{display:block;width:fit-content;margin-bottom:4px}
   </style>
 </head>
 <body><main class="shell"><div class="topline"></div>
@@ -206,8 +233,10 @@ function initPickupMap(i){const canvas=document.getElementById('pickup-map-canva
 if(typeof L==='undefined'){canvas.innerHTML='<div class="map-fallback">The map couldn’t load right now. You can still tap “Get directions”.</div>';return}
 const center=[CAMPUS.lat,CAMPUS.lng];
 const map=L.map(canvas,{zoomControl:false,attributionControl:false,zoomSnap:.25,zoomDelta:1,wheelPxPerZoomLevel:110,minZoom:12,maxZoom:19,zoomAnimation:true,inertia:true}).setView(center,15,{animate:false});
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:19,detectRetina:true}).addTo(map);
-L.control.attribution({prefix:false,position:'bottomleft'}).addAttribution('© OpenStreetMap contributors · © CARTO').addTo(map);
+const osm=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,crossOrigin:true}).addTo(map);
+const attr=L.control.attribution({prefix:false,position:'bottomleft'}).addAttribution('© OpenStreetMap contributors').addTo(map);
+let tileFails=0,usedFallback=false;
+osm.on('tileerror',()=>{if(usedFallback||++tileFails<3)return;usedFallback=true;map.removeLayer(osm);L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,crossOrigin:true}).addTo(map);attr.removeAttribution('© OpenStreetMap contributors').addAttribution('Tiles © Esri')});
 L.circle(center,{radius:140,color:'#236b52',weight:1.5,dashArray:'4 7',fillColor:'#236b52',fillOpacity:.13,interactive:false}).addTo(map);
 const pinIcon=L.divIcon({className:'reshare-pin',html:`<span class="pin-pulse"></span><span class="pin-dot"></span><span class="pin-label">${i.loc}</span>`,iconSize:[0,0],iconAnchor:[0,0]});
 L.marker(center,{icon:pinIcon,keyboard:false,title:i.loc}).addTo(map).on('click',()=>map.flyTo(center,18,{duration:1.2}));
@@ -215,11 +244,11 @@ pickupMap=map;
 const syncZoom=()=>{const z=map.getZoom(),zi=document.getElementById('map-zoom-in'),zo=document.getElementById('map-zoom-out');if(zi)zi.disabled=z>=map.getMaxZoom()-.01;if(zo)zo.disabled=z<=map.getMinZoom()+.01};
 map.on('zoom zoomend',syncZoom);syncZoom();
 map.on('dragstart',()=>setMapPill('campus',false));
-setTimeout(()=>{if(pickupMap===map){map.invalidateSize();map.flyTo(center,16.5,{duration:1.8,easeLinearity:.2})}},380)}
+setTimeout(()=>{if(pickupMap===map){map.invalidateSize();map.flyTo(center,16,{duration:1.8,easeLinearity:.2})}},380)}
 function setMapPill(name,on){document.querySelectorAll('.map-pill').forEach(p=>p.classList.toggle('is-on',on&&p.dataset.pill===name))}
 function mapToast(msg){const t=document.getElementById('map-toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),3200)}
 function mapZoom(d){if(!pickupMap)return;d>0?pickupMap.zoomIn():pickupMap.zoomOut()}
-function mapRecenter(){if(!pickupMap)return;setMapPill('campus',true);pickupMap.flyTo([CAMPUS.lat,CAMPUS.lng],16.5,{duration:1.2})}
+function mapRecenter(){if(!pickupMap)return;setMapPill('campus',true);pickupMap.flyTo([CAMPUS.lat,CAMPUS.lng],16,{duration:1.2})}
 function mapLocate(){if(!pickupMap)return;if(!navigator.geolocation){mapToast('Your browser can’t share its location.');return}
 setMapPill('me',true);mapToast('Finding you…');
 navigator.geolocation.getCurrentPosition(pos=>{if(!pickupMap)return;const ll=[pos.coords.latitude,pos.coords.longitude];pickupYou=ll;
@@ -245,7 +274,12 @@ const sharePickup=[...document.querySelectorAll('#share select')].find(select=>s
 // Circular practice: select a step to understand the cycle
 const cycle=document.querySelector('.cycle');if(cycle){const note=document.createElement('div');note.className='cycle-message';note.textContent='CLICK A STEP TO FOLLOW THE ITEM';cycle.after(note);const messages=['A student offers an underused item.','Someone chooses to borrow before buying.','The item supports a new creative project.','It comes back ready for its next use.','One item begins another life.'];[...document.querySelectorAll('.cycle-node')].forEach((node,i)=>node.addEventListener('click',()=>{document.querySelectorAll('.cycle-node').forEach(x=>x.classList.remove('active-step'));node.classList.add('active-step');note.textContent=messages[i]}));new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.closest('.section').classList.add('in-view')}),{threshold:.35}).observe(cycle)}
 // Impact numbers animate after they enter view and respond on hover
-document.querySelectorAll('.impact .stat').forEach(stat=>{const value=stat.querySelector('strong');const target=value?.textContent;if(!target)return;new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting&&!stat.dataset.counted){stat.dataset.counted='true';stat.classList.add('counted');const numeric=parseFloat(target.replace(/[^0-9.]/g,''));const suffix=target.replace(/[0-9.,]/g,'');let start=performance.now();(function tick(now){let p=Math.min(1,(now-start)/750);value.textContent=(numeric*p).toFixed(target.includes('.')?1:0).replace(/\.0$/,'')+suffix;if(p<1)requestAnimationFrame(tick);else value.textContent=target})(start)}}),{threshold:.45}).observe(stat)});
+document.querySelectorAll('.impact .stat').forEach((stat,idx)=>{const value=stat.querySelector('strong');const target=value?.textContent;if(!target)return;
+const numeric=parseFloat(target.replace(/[^0-9.]/g,'')),suffix=target.replace(/[0-9.,]/g,''),dec=target.includes('.')?1:0,comma=target.includes(',');let raf=0;
+const fmt=v=>{let t=v.toFixed(dec);if(comma)t=Number(t).toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});return t+suffix};
+function run(){cancelAnimationFrame(raf);stat.classList.remove('counted');void stat.offsetWidth;stat.style.animationDelay=value.style.animationDelay=(idx*90)+'ms';stat.classList.add('counted');const start=performance.now()+idx*90,dur=1100;(function tick(now){const p=Math.max(0,Math.min(1,(now-start)/dur)),e=1-Math.pow(1-p,3);value.textContent=fmt(numeric*e);if(p<1)raf=requestAnimationFrame(tick);else value.textContent=target})(performance.now())}
+function reset(){cancelAnimationFrame(raf);value.textContent=fmt(0);stat.classList.remove('counted')}
+new IntersectionObserver(entries=>entries.forEach(e=>e.isIntersecting?run():reset()),{threshold:.35}).observe(stat)});
 // Move impact methodology beneath the comparison, keeping the headline area clean
 const impactMethod=document.querySelector('#impact .section-copy'),impactComparison=document.querySelector('#impact .compare');if(impactMethod&&impactComparison){impactMethod.className='impact-disclaimer';impactComparison.after(impactMethod)}
 // Count personal dashboard numbers when the dashboard enters view
@@ -273,5 +307,29 @@ if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>es.fo
 const bar=document.createElement('div');bar.className='scroll-progress';document.body.append(bar);
 const setProgress=()=>{const h=document.documentElement.scrollHeight-innerHeight;document.documentElement.style.setProperty('--p',h>0?Math.min(1,scrollY/h):0)};
 addEventListener('scroll',setProgress,{passive:true});addEventListener('resize',setProgress);setProgress();
+})();
+
+// Circular practice: compact steps, auto-play with pause/prev/next, progress bar, keyboard support
+(function(){
+const cyc=document.querySelector('.cycle');if(!cyc)return;
+const section=cyc.closest('.section');section.classList.add('cycle-section');
+const nodes=[...cyc.querySelectorAll('.cycle-node')],arrows=[...cyc.querySelectorAll('.arrow')],note=section.querySelector('.cycle-message');if(!note||!nodes.length)return;
+const msgs=['A student offers an underused item.','Someone chooses to borrow before buying.','The item supports a new creative project.','It comes back ready for its next use.','One item begins another life.'];
+nodes.forEach((n,i)=>{const label=n.textContent.trim();n.innerHTML='<span class="step-no">0'+(i+1)+'</span><span>'+label+'</span>';n.tabIndex=0;n.setAttribute('role','button');n.setAttribute('aria-label','Step '+(i+1)+': '+label)});
+note.insertAdjacentHTML('afterend','<div class="cycle-controls"><button class="cycle-btn" data-act="prev" aria-label="Previous step">←</button><button class="cycle-btn" data-act="toggle" aria-label="Pause">❚❚</button><button class="cycle-btn" data-act="next" aria-label="Next step">→</button></div><div class="cycle-track"><span class="cycle-fill"></span></div>');
+const fill=section.querySelector('.cycle-fill'),toggle=section.querySelector('[data-act=toggle]');
+let cur=-1,paused=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches,visible=false,hover=false,hold=0;
+function paint(){toggle.textContent=paused?'▶':'❚❚';toggle.setAttribute('aria-label',paused?'Play':'Pause')}
+function setStep(i,user){cur=(i+nodes.length)%nodes.length;if(user)hold=Date.now()+7000;
+nodes.forEach((n,k)=>{n.classList.toggle('active-step',k===cur);n.classList.toggle('done',k<cur);n.setAttribute('aria-pressed',String(k===cur))});
+arrows.forEach((a,k)=>{a.classList.toggle('on',k<cur);a.classList.toggle('flow',k===cur)});
+note.textContent='0'+(cur+1)+' / 0'+nodes.length+' — '+msgs[cur];fill.style.width=((cur+1)/nodes.length*100)+'%'}
+nodes.forEach((n,i)=>{n.addEventListener('click',()=>setStep(i,true));n.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setStep(i,true)}else if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();const t=(i+(e.key==='ArrowRight'?1:-1)+nodes.length)%nodes.length;nodes[t].focus();setStep(t,true)}})});
+section.querySelector('[data-act=prev]').addEventListener('click',()=>setStep(cur<0?0:cur-1,true));
+section.querySelector('[data-act=next]').addEventListener('click',()=>setStep(cur+1,true));
+toggle.addEventListener('click',()=>{paused=!paused;hold=0;paint()});
+cyc.addEventListener('mouseenter',()=>hover=true);cyc.addEventListener('mouseleave',()=>hover=false);
+new IntersectionObserver(es=>es.forEach(e=>{visible=e.isIntersecting;if(visible&&cur<0)setStep(0)}),{threshold:.4}).observe(cyc);
+setInterval(()=>{if(paused||hover||!visible||Date.now()<hold)return;setStep(cur+1)},2800);paint();
 })();
 </script></body></html>
