@@ -176,6 +176,27 @@
 @media(max-width:760px){.cycle{flex-wrap:nowrap!important;gap:8px!important;justify-content:center}.cycle .arrow{display:none!important}.cycle .cycle-node{width:58px!important;height:58px!important;padding:4px!important;flex:none}.cycle .cycle-node>span:not(.step-no){display:none}.cycle .cycle-node .ico{width:20px;height:20px;margin:0}.cycle .cycle-node.active-step{transform:scale(1.18)!important}.cycle-rail{display:block;margin-top:6px}}
 .cycle .cycle-node .ico{display:none!important}
 @media(max-width:760px){.cycle .cycle-node .step-no{font-size:14px}}
+
+/* circular practice spacing: nothing touches or overlaps */
+.cycle,.cycle-rail,.cycle-card{max-width:940px!important;margin-left:auto!important;margin-right:auto!important}
+.cycle{gap:14px!important;padding:34px 0 18px!important;flex-wrap:nowrap}
+.cycle .arrow{flex:none;width:30px;text-align:center;font-size:18px}
+.cycle .cycle-node{flex:none;width:112px!important;height:112px!important}
+.cycle .cycle-node.active-step,.cycle .cycle-node.active-step:hover{transform:scale(1.07)!important}
+.cycle .cycle-node.active-step:after{inset:-5px;animation:ringPulse2 1.8s ease-out infinite}
+@keyframes ringPulse2{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.14);opacity:0}}
+.cycle .cycle-node .step-no{margin-bottom:2px}
+.cycle-rail{height:34px;margin-top:14px!important}
+.cycle-rail .token{top:5px}
+.cycle-rail .tick{top:11px}
+.cycle-rail:before{top:16px}
+.cycle-card{margin-top:30px!important;gap:28px;padding:24px 28px}
+.cycle-card .big{min-width:84px;text-align:center}
+.cycle-card h3{margin-bottom:8px}
+.cycle-card .fact{margin-top:12px}
+@media(max-width:760px){.cycle{gap:8px!important;padding:26px 0 10px!important}.cycle .cycle-node{width:58px!important;height:58px!important}.cycle-card{padding:20px}}
+.cycle{justify-content:space-between!important}@media(max-width:760px){.cycle{justify-content:center!important}}
+@media(min-width:761px){.cycle{padding-left:8px!important;padding-right:8px!important}}
 </style>
 </head>
 <body><main class="shell"><div class="topline"></div>
