@@ -133,6 +133,12 @@
     .impact .stat.counted strong{animation:countPop .6s var(--ease) backwards}
   .panel .stats .stat strong{display:block;width:fit-content;margin-bottom:4px}
   .brand[role=link]{cursor:pointer}.brand[role=link]:focus-visible{outline:2px solid var(--green);outline-offset:4px;border-radius:8px}
+
+/* impact stats: no gray backing while animating — tiles stay solid, only their content animates */
+.impact .stats,.panel .stats{background:transparent!important;gap:0!important}
+.impact .stat{background:var(--ink,#101214);box-shadow:inset 0 0 0 .5px #3a3d3f}
+.impact .stat.counted{animation:none!important}
+.impact .stat.counted strong,.impact .stat.counted span{animation:statRise .7s var(--ease) backwards}
 </style>
 </head>
 <body><main class="shell"><div class="topline"></div>
