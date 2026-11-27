@@ -197,10 +197,35 @@
 @media(max-width:760px){.cycle{gap:8px!important;padding:26px 0 10px!important}.cycle .cycle-node{width:58px!important;height:58px!important}.cycle-card{padding:20px}}
 .cycle{justify-content:space-between!important}@media(max-width:760px){.cycle{justify-content:center!important}}
 @media(min-width:761px){.cycle{padding-left:8px!important;padding-right:8px!important}}
+
+/* cart badge: hidden until something is added, then pops */
+.nav-cart .cart-count{transition:transform .35s var(--ease),opacity .25s}
+.nav-cart .cart-count[data-n="0"]{transform:scale(0);opacity:0}
+.nav-cart .cart-count.pop{animation:badgePop .6s var(--ease)}
+.nav-cart.bump svg{animation:cartBump .6s var(--ease)}
+@keyframes badgePop{0%{transform:scale(0)}55%{transform:scale(1.55)}100%{transform:scale(1)}}
+@keyframes cartBump{0%,100%{transform:none}30%{transform:translateY(-4px) rotate(-12deg)}60%{transform:rotate(8deg)}}
+.fly-dot{position:fixed;z-index:3000;width:18px;height:18px;border-radius:50%;background:var(--orange);pointer-events:none;box-shadow:0 0 0 6px rgba(255,93,49,.25)}
+/* clickable steps */
+.borrow-step.link{cursor:pointer}.borrow-step.link:hover{background:var(--yellow)!important;transform:translateY(-2px)}
+/* return proof photo */
+.proof{margin:0 0 18px;text-align:left}
+.proof-label{font-weight:800;font-size:13px;margin-bottom:8px;display:flex;justify-content:space-between;gap:10px}
+.proof-label span{font:700 10px 'DM Mono',monospace;letter-spacing:.08em;color:var(--green);align-self:center}
+.proof-drop{display:grid;grid-template-columns:96px 1fr;gap:16px;align-items:center;border:1.5px dashed #9aa79f;border-radius:14px;background:#fff;padding:14px;cursor:pointer;transition:border-color .25s,background .25s,transform .25s}
+.proof-drop:hover,.proof-drop.drag{border-color:var(--green);background:#f3f8f5}
+.proof-thumb{width:96px;height:96px;border-radius:12px;background:#eef3ef;display:grid;place-items:center;overflow:hidden;color:var(--green)}
+.proof-thumb img{width:100%;height:100%;object-fit:cover;display:block;animation:cardIn .4s var(--ease)}
+.proof-drop strong{display:block;font-size:14px;margin-bottom:3px}.proof-drop p{margin:0;font-size:12px;line-height:1.45;color:#51534f}
+.proof-drop .proof-remove{margin-top:8px;border:1px solid var(--ink);background:#fff;border-radius:10px;padding:6px 10px;font-weight:700;font-size:11px;cursor:pointer}
+.proof.done .proof-drop{border-style:solid;border-color:var(--green);background:#f3f8f5}
+.button.dark[disabled]{opacity:.4;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+.proof-hint{font-size:11px;color:#8a5a00;margin:-6px 0 12px;text-align:center}.proof-hint.ok{display:none}
+.share-modal .modal-info>.lead{text-align:center;margin-left:auto;margin-right:auto;max-width:460px}
 </style>
 </head>
 <body><main class="shell"><div class="topline"></div>
-  <nav class="nav"><div class="brand" role="link" tabindex="0" aria-label="ReShare home" onclick="go('home');closeItem&&closeItem();window.scrollTo({top:0,behavior:'smooth'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}"><img class="reshare-logo" src="reshare-logo.svg" alt="ReShare"><span class="massart"><span>MASSART</span><span>COMMUNITY</span></span></div><div class="navlinks"><button class="active" onclick="go('home')">Home</button><button onclick="go('explore')">Explore</button><button onclick="go('share')">Share an Item</button><button onclick="go('impact')">Our Impact</button><button onclick="go('myloop')">My Once More</button></div><div class="nav-right"><button class="nav-search" onclick="openSearchModal()" aria-label="Search items"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span>Search</span></button><button class="nav-cart" onclick="go('myloop')" aria-label="My borrowed items"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8h12a1 1 0 0 1 1 1v9a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V9a1 1 0 0 1 1-1z"/><path d="M9 8V7a3 3 0 0 1 6 0v1"/></svg><span class="cart-count">2</span></button><button id="profile-trigger" class="profile" aria-label="Open Hiya's profile">HP</button></div></nav>
+  <nav class="nav"><div class="brand" role="link" tabindex="0" aria-label="ReShare home" onclick="go('home');closeItem&&closeItem();window.scrollTo({top:0,behavior:'smooth'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}"><img class="reshare-logo" src="reshare-logo.svg" alt="ReShare"><span class="massart"><span>MASSART</span><span>COMMUNITY</span></span></div><div class="navlinks"><button class="active" onclick="go('home')">Home</button><button onclick="go('explore')">Explore</button><button onclick="go('share')">Share an Item</button><button onclick="go('impact')">Our Impact</button><button onclick="go('myloop')">My Once More</button></div><div class="nav-right"><button class="nav-search" onclick="openSearchModal()" aria-label="Search items"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span>Search</span></button><button class="nav-cart" onclick="go('myloop')" aria-label="My borrowed items"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8h12a1 1 0 0 1 1 1v9a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V9a1 1 0 0 1 1-1z"/><path d="M9 8V7a3 3 0 0 1 6 0v1"/></svg><span class="cart-count" data-n="0">0</span></button><button id="profile-trigger" class="profile" aria-label="Open Hiya's profile">HP</button></div></nav>
   <aside id="profile-panel" class="profile-panel" aria-label="Hiya's Once More profile"><button class="profile-close" aria-label="Close profile">×</button><div class="profile-top"><div class="profile-avatar">HP</div><div><div class="eyebrow">MassArt maker</div><h3>Hiya Patel</h3></div></div><div class="profile-grid"><div class="profile-metric"><strong>2</strong><span>ITEMS BORROWED<br>RIGHT NOW</span></div><div class="profile-metric"><strong>3</strong><span>ITEMS SHARED<br>WITH OTHERS</span></div><div class="profile-metric"><strong>18</strong><span>REUSES YOUR<br>ITEMS ENABLED</span></div><div class="profile-metric"><strong>5</strong><span>SELF-REPORTED<br>PURCHASES AVOIDED</span></div></div><p class="profile-note">Your next return is due Nov 10. Thanks for keeping creative tools in motion.</p><button class="button dark" onclick="closeProfile();go('myloop')">Open My Once More →</button></aside>
 
   <section id="home" class="view active"><div class="hero"><div class="hero-copy"><div class="eyebrow">MassArt's sharing platform</div><h1>Good things are meant to <span class="blue">go around.</span></h1><p class="lead">Borrow what you need. Share what you have. Keep resources in use and out of waste.</p><div class="search"><input placeholder="What do you need for your next project?" onkeydown="if(event.key==='Enter')go('explore')"><button class="button" onclick="go('explore')">Search</button></div><div class="hero-actions"><button class="button dark" onclick="go('explore')">Find Something to Borrow →</button><button class="button light" onclick="go('share')">Share an Item</button></div></div><div class="hero-art"><img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1000&q=85" alt="Camera equipment in a creative studio"><div class="floating"><strong>268</strong>items currently moving between MassArt makers</div></div></div>
@@ -426,4 +451,35 @@ addEventListener('resize',place);setTimeout(()=>{place();const i=nodes.findIndex
 
 // hover a step to show its detail card
 (function(){document.querySelectorAll('.cycle .cycle-node').forEach(n=>{n.addEventListener('mouseenter',()=>{if(!n.classList.contains('active-step'))n.click()});n.addEventListener('focus',()=>{if(!n.classList.contains('active-step'))n.click()})})})();
+
+// cart badge, pick-up popup link, return proof photo
+(function(){
+const cart=document.querySelector('.nav-cart'),badge=cart&&cart.querySelector('.cart-count');
+function addToCart(fromEl){if(!badge)return;const n=(+badge.dataset.n||0)+1;
+ const go=()=>{badge.dataset.n=n;badge.textContent=n;badge.classList.remove('pop');cart.classList.remove('bump');void badge.offsetWidth;badge.classList.add('pop');cart.classList.add('bump')};
+ const to=cart.getBoundingClientRect(),from=(fromEl||document.body).getBoundingClientRect();
+ const sx=from.left+from.width/2,sy=from.top+from.height/2,ex=to.left+to.width/2,ey=to.top+to.height/2;
+ const d=document.createElement('div');d.className='fly-dot';d.style.left=sx-9+'px';d.style.top=sy-9+'px';document.body.appendChild(d);
+ if(d.animate){const a=d.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:`translate(${(ex-sx)*.5}px,${(ey-sy)*.5-80}px) scale(1.2)`,opacity:1,offset:.5},{transform:`translate(${ex-sx}px,${ey-sy}px) scale(.4)`,opacity:.9}],{duration:750,easing:'cubic-bezier(.5,0,.3,1)'});a.onfinish=()=>{d.remove();go()}}else{d.remove();go()}}
+const _bs=window.borrowSuccess;
+window.borrowSuccess=function(name){const btn=document.querySelector('.item-modal .button.dark');const src=btn||document.body;
+ const idx=items.findIndex(x=>x.name===name);_bs(name);
+ addToCart(src);
+ modal.querySelectorAll('.borrow-step').forEach(st=>{const t=st.textContent.trim();
+  if(t==='PICK UP'&&idx>=0){st.classList.add('link');st.setAttribute('role','button');st.tabIndex=0;st.title='See the pick-up spot';st.onclick=()=>openPickupMap(idx);st.onkeydown=e=>{if(e.key==='Enter')openPickupMap(idx)}}
+  if(t==='RETURN'){st.classList.add('link');st.setAttribute('role','button');st.tabIndex=0;st.onclick=()=>openReturnModal();st.onkeydown=e=>{if(e.key==='Enter')openReturnModal()}}});
+ const dark=modal.querySelector('.button.dark');if(dark&&idx>=0){const b=document.createElement('button');b.className='button light';b.style.marginRight='10px';b.textContent='See pick-up spot';b.onclick=()=>openPickupMap(idx);dark.parentNode.insertBefore(b,dark)}};
+const _or=window.openReturnModal;
+window.openReturnModal=function(){_or();const btn=modal.querySelector('.button.dark');const q=[...modal.querySelectorAll('p')].find(p=>/avoid purchasing/.test(p.textContent));
+ const proof=document.createElement('div');proof.className='proof';
+ proof.innerHTML='<div class="proof-label">Photo of the item before returning<span>REQUIRED</span></div><label class="proof-drop"><div class="proof-thumb"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></div><div><strong>Add a photo as proof</strong><p>Show the item and its condition right before you hand it back. Tap to take or choose a photo, or drop one here.</p></div><input type="file" accept="image/*" capture="environment" hidden></label>';
+ q.parentNode.insertBefore(proof,q);
+ const hint=document.createElement('div');hint.className='proof-hint';hint.textContent='Add a photo to confirm the return.';btn.parentNode.insertBefore(hint,btn);
+ btn.disabled=true;const drop=proof.querySelector('.proof-drop'),input=proof.querySelector('input'),thumb=proof.querySelector('.proof-thumb');const empty=thumb.innerHTML;
+ function setFile(f){if(!f||!/^image\//.test(f.type))return;const url=URL.createObjectURL(f);thumb.innerHTML='<img alt="Return proof photo" src="'+url+'">';proof.classList.add('done');proof.querySelector('strong').textContent='Photo added';proof.querySelector('p').innerHTML=f.name.replace(/</g,'')+'<br><button type="button" class="proof-remove">Remove photo</button>';
+  proof.querySelector('.proof-remove').onclick=e=>{e.preventDefault();e.stopPropagation();input.value='';thumb.innerHTML=empty;proof.classList.remove('done');proof.querySelector('strong').textContent='Add a photo as proof';proof.querySelector('p').textContent='Show the item and its condition right before you hand it back. Tap to take or choose a photo, or drop one here.';btn.disabled=true;hint.classList.remove('ok')};
+  btn.disabled=false;hint.classList.add('ok');window.__returnProof=url}
+ input.addEventListener('change',()=>setFile(input.files[0]));
+ ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag')}));['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('drag')}));drop.addEventListener('drop',e=>setFile(e.dataTransfer.files[0]))};
+})();
 </script></body></html>
