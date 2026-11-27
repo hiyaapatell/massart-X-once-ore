@@ -140,6 +140,40 @@
 .impact .stat.counted{animation:none!important}
 .impact .stat.counted strong,.impact .stat.counted span{animation:statRise .7s var(--ease) backwards}
 .cycle-controls,.cycle-track,.cycle-fill{display:none!important}
+
+/* circular practice v3: icons, per-step colour, travelling token rail, detail card */
+.cycle{position:relative}
+.cycle .cycle-node{--c:var(--blue);position:relative;overflow:visible}
+.cycle .cycle-node .ico{width:26px;height:26px;margin:0 auto 2px;color:var(--ink);transition:transform .5s var(--ease)}
+.cycle .cycle-node:nth-of-type(1){--c:#ffd34d}.cycle .cycle-node:nth-of-type(2){--c:#2fb3ff}.cycle .cycle-node:nth-of-type(3){--c:#ff8a5c}.cycle .cycle-node:nth-of-type(4){--c:#7fd1a8}.cycle .cycle-node:nth-of-type(5){--c:#2fb3ff}
+.cycle .cycle-node:hover{background:var(--c)!important}
+.cycle .cycle-node:hover .ico{transform:rotate(-10deg) scale(1.15)}
+.cycle .cycle-node.active-step,.cycle .cycle-node.active-step:hover{background:var(--c)!important;box-shadow:inset 0 0 0 1px var(--ink),0 10px 26px -8px rgba(16,18,20,.35)!important}
+.cycle .cycle-node.active-step .ico{animation:icoBob 1.6s ease-in-out infinite}
+.cycle .cycle-node.active-step:after{content:'';position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--c);animation:ringPulse 1.8s ease-out infinite;pointer-events:none}
+@keyframes ringPulse{0%{transform:scale(.96);opacity:.9}100%{transform:scale(1.28);opacity:0}}
+@keyframes icoBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px) rotate(6deg)}}
+.cycle-rail{position:relative;height:30px;margin:2px 0 0}
+.cycle-rail:before{content:'';position:absolute;left:0;right:0;top:14px;border-top:2px dashed rgba(35,107,82,.35)}
+.cycle-rail .tick{position:absolute;top:9px;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:var(--paper);border:2px solid rgba(35,107,82,.5);transition:background .4s,border-color .4s}
+.cycle-rail .tick.on{background:var(--green);border-color:var(--green)}
+.cycle-rail .token{position:absolute;top:3px;left:0;width:24px;height:24px;margin-left:-12px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-size:13px;box-shadow:0 0 0 5px rgba(35,107,82,.18);transition:left .9s var(--ease)}
+.cycle-rail .token.wrap{transition-duration:1.3s}
+.cycle-rail .again{position:absolute;right:0;top:-2px;font:700 10px 'DM Mono',monospace;letter-spacing:.08em;color:var(--green);opacity:0;transition:opacity .4s}
+.cycle-rail .again.show{opacity:1}
+.cycle-card{display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center;max-width:760px;margin:22px auto 0;padding:20px 24px;border:1px solid var(--ink);border-radius:18px;background:#fff;box-shadow:6px 6px 0 var(--c,var(--yellow));transition:box-shadow .5s}
+.cycle-card .big{font:800 54px/1 Inter,sans-serif;letter-spacing:-.06em;color:var(--green)}
+.cycle-card h3{margin:0 0 4px;font-size:20px;letter-spacing:-.04em}
+.cycle-card p{margin:0;font-size:14px;line-height:1.5;color:#51534f}
+.cycle-card .fact{display:inline-block;margin-top:9px;padding:5px 10px;border-radius:10px;background:#eef3ef;font:700 10px 'DM Mono',monospace;letter-spacing:.06em;color:var(--green);text-transform:uppercase}
+.cycle-card .txt{animation:cardIn .5s var(--ease)}
+@keyframes cardIn{from{opacity:0;transform:translateY(10px)}}
+.cycle-card .big{animation:cardIn .5s var(--ease)}
+.cycle-card .go{border:1px solid var(--ink);background:var(--ink);color:#fff;border-radius:14px;padding:12px 16px;font-weight:800;font-size:13px;cursor:pointer;white-space:nowrap;transition:transform .2s,background .2s}
+.cycle-card .go:hover{transform:translateY(-2px);background:var(--green)}
+.cycle-message{display:none!important}
+@media(max-width:760px){.cycle-card{grid-template-columns:1fr;gap:10px;text-align:left}.cycle-card .big{font-size:38px}.cycle .cycle-node .ico{width:20px;height:20px}}
+@media(max-width:760px){.cycle{flex-wrap:nowrap!important;gap:8px!important;justify-content:center}.cycle .arrow{display:none!important}.cycle .cycle-node{width:58px!important;height:58px!important;padding:4px!important;flex:none}.cycle .cycle-node>span:not(.step-no){display:none}.cycle .cycle-node .ico{width:20px;height:20px;margin:0}.cycle .cycle-node.active-step{transform:scale(1.18)!important}.cycle-rail{display:block;margin-top:6px}}
 </style>
 </head>
 <body><main class="shell"><div class="topline"></div>
@@ -339,5 +373,31 @@ toggle.addEventListener('click',()=>{paused=!paused;hold=0;paint()});
 cyc.addEventListener('mouseenter',()=>hover=true);cyc.addEventListener('mouseleave',()=>hover=false);
 new IntersectionObserver(es=>es.forEach(e=>{visible=e.isIntersecting;if(visible&&cur<0)setStep(0)}),{threshold:.4}).observe(cyc);
 setInterval(()=>{if(paused||hover||!visible||Date.now()<hold)return;setStep(cur+1)},2800);paint();
+})();
+
+// Circular practice v3 layer: icons, token rail, detail card (reads the active step from the node classes)
+(function(){
+const cyc=document.querySelector('.cycle');if(!cyc)return;
+const nodes=[...cyc.querySelectorAll('.cycle-node')];if(nodes.length!==5)return;
+const ICONS=['<path d="M12 16V4M7 9l5-5 5 5M5 20h14"/>','<path d="M6 8h12l-1 12H7L6 8zM9 8a3 3 0 0 1 6 0"/>','<path d="M4 20l4-1L19 8l-3-3L5 16l-1 4zM14 7l3 3"/>','<path d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"/>','<path d="M4 12a8 8 0 0 1 14-5l2-2v6h-6l2-2a5 5 0 0 0-9 3M20 12a8 8 0 0 1-14 5l-2 2v-6h6l-2 2a5 5 0 0 0 9-3"/>'];
+const DATA=[
+ ['Share an item','List something you are not using: camera gear, tools, fabric, books. Add a photo, a pickup spot and honest condition notes.','Takes about two minutes','Start sharing',"share"],
+ ['Borrow it','Find what you need, request it, and pick a time and place on campus to collect it.','Pick up on campus','Browse items',"explore"],
+ ['Use it','Take it through your project, your studio, your semester. It only has to work for as long as you need it.','Borrow for a set window','See what is out',"explore"],
+ ['Return it','Bring it back, note its condition, and say thanks. The next person is waiting on it.','Condition check on return','My ReShare',"myloop"],
+ ['Share again','It goes back into circulation, and one more person gets a use out of something that already exists.','Every return adds a use','Share your own',"share"]];
+nodes.forEach((n,i)=>{if(!n.querySelector('.ico'))n.insertAdjacentHTML('afterbegin','<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+ICONS[i]+'</svg>')});
+cyc.insertAdjacentHTML('afterend','<div class="cycle-rail" aria-hidden="true"><span class="again">↺ AND AGAIN</span><span class="token">●</span></div><div class="cycle-card" aria-live="polite"><div class="big"></div><div class="txt"><h3></h3><p></p><span class="fact"></span></div><button class="go" type="button"></button></div>');
+const rail=cyc.nextElementSibling,token=rail.querySelector('.token'),again=rail.querySelector('.again'),card=rail.nextElementSibling;
+const ticks=nodes.map(()=>{const t=document.createElement('span');t.className='tick';rail.insertBefore(t,token);return t});
+let last=-1;
+function place(){const rr=rail.getBoundingClientRect();nodes.forEach((n,i)=>{const r=n.getBoundingClientRect();ticks[i].style.left=(r.left+r.width/2-rr.left)+'px'});if(last>=0)token.style.left=ticks[last].style.left}
+function show(i){if(i===last||i<0)return;const wrap=last===4&&i===0;last=i;place();token.classList.toggle('wrap',wrap);token.style.left=ticks[i].style.left;ticks.forEach((t,k)=>t.classList.toggle('on',k<=i));again.classList.toggle('show',i===4);
+const d=DATA[i];card.style.setProperty('--c',getComputedStyle(nodes[i]).getPropertyValue('--c'));
+const big=card.querySelector('.big'),txt=card.querySelector('.txt');big.textContent='0'+(i+1);card.querySelector('h3').textContent=d[0];card.querySelector('p').textContent=d[1];card.querySelector('.fact').textContent=d[2];
+const go=card.querySelector('.go');go.textContent=d[3]+' →';go.onclick=()=>window.go(d[4]);
+[big,txt].forEach(e=>{e.style.animation='none';e.offsetHeight;e.style.animation=''})}
+new MutationObserver(()=>{const i=nodes.findIndex(n=>n.classList.contains('active-step'));show(i)}).observe(cyc,{subtree:true,attributes:true,attributeFilter:['class']});
+addEventListener('resize',place);setTimeout(()=>{place();const i=nodes.findIndex(n=>n.classList.contains('active-step'));if(i>=0){last=-1;show(i)}},300);
 })();
 </script></body></html>
