@@ -237,13 +237,31 @@
 .catalog-item .ci-go{position:absolute;right:16px;bottom:14px;width:44px;height:44px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;transition:transform .3s var(--ease),background .3s}
 .catalog-item:hover .ci-go{transform:translateX(3px) scale(1.08);background:var(--ink)}
 @media(max-width:560px){.modal-card .catalog-item{grid-template-columns:84px 1fr;min-height:112px}.modal-card .catalog-item img{width:84px!important;height:84px!important;max-height:84px!important}.catalog-item .ci-text{padding-right:0}.catalog-item .ci-status{display:none}.catalog-item .ci-go{width:38px;height:38px}}
+
+/* hero: "I'm making a ___" picker */
+.makeit{margin-top:34px;max-width:620px}
+.makeit-q{font:800 clamp(24px,3vw,34px)/1.15 Inter,sans-serif;letter-spacing:-.05em;min-height:42px}
+.makeit-word{color:var(--green);border-bottom:3px solid var(--yellow);padding-bottom:1px}
+.makeit-caret{display:inline-block;width:3px;height:.9em;margin-left:3px;background:var(--ink);vertical-align:-.1em;animation:caret 1s steps(1) infinite}
+@keyframes caret{50%{opacity:0}}
+.makeit-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0 18px}
+.mk-tile{position:relative;text-align:left;border:1px solid var(--ink);background:#fff;border-radius:16px;padding:14px 14px 12px;cursor:pointer;display:grid;gap:4px;overflow:hidden;transition:transform .3s var(--ease),box-shadow .3s,background .3s}
+.mk-tile strong{font-size:15px;letter-spacing:-.03em}
+.mk-tile small{font:700 10px 'DM Mono',monospace;letter-spacing:.08em;color:var(--green);text-transform:uppercase}
+.mk-tile i{position:absolute;right:12px;top:12px;font-style:normal;opacity:0;transform:translateX(-6px);transition:.3s var(--ease)}
+.mk-tile:hover,.mk-tile.lit{background:var(--c);transform:translateY(-4px);box-shadow:4px 4px 0 var(--ink)}
+.mk-tile:hover i,.mk-tile.lit i{opacity:1;transform:none}
+.mk-tile:active{transform:translateY(0) scale(.98)}
+.makeit-share{border:0;background:none;padding:6px 0;font-size:14px;cursor:pointer;color:#51534f}
+.makeit-share b{color:var(--ink);border-bottom:2px solid var(--ink);transition:color .2s,border-color .2s}.makeit-share:hover b{color:var(--green);border-color:var(--green)}
+@media(max-width:560px){.makeit-tiles{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body><main class="shell"><div class="topline"></div>
   <nav class="nav"><div class="brand" role="link" tabindex="0" aria-label="ReShare home" onclick="go('home');closeItem&&closeItem();window.scrollTo({top:0,behavior:'smooth'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}"><img class="reshare-logo" src="reshare-logo.svg" alt="ReShare"><span class="massart"><span>MASSART</span><span>COMMUNITY</span></span></div><div class="navlinks"><button class="active" onclick="go('home')">Home</button><button onclick="go('explore')">Explore</button><button onclick="go('share')">Share an Item</button><button onclick="go('impact')">Our Impact</button><button onclick="go('myloop')">My Once More</button></div><div class="nav-right"><button class="nav-search" onclick="openSearchModal()" aria-label="Search items"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span>Search</span></button><button class="nav-cart" onclick="go('myloop')" aria-label="My borrowed items"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8h12a1 1 0 0 1 1 1v9a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V9a1 1 0 0 1 1-1z"/><path d="M9 8V7a3 3 0 0 1 6 0v1"/></svg><span class="cart-count" data-n="0">0</span></button><button id="profile-trigger" class="profile" aria-label="Open Hiya's profile">HP</button></div></nav>
   <aside id="profile-panel" class="profile-panel" aria-label="Hiya's Once More profile"><button class="profile-close" aria-label="Close profile">×</button><div class="profile-top"><div class="profile-avatar">HP</div><div><div class="eyebrow">MassArt maker</div><h3>Hiya Patel</h3></div></div><div class="profile-grid"><div class="profile-metric"><strong>2</strong><span>ITEMS BORROWED<br>RIGHT NOW</span></div><div class="profile-metric"><strong>3</strong><span>ITEMS SHARED<br>WITH OTHERS</span></div><div class="profile-metric"><strong>18</strong><span>REUSES YOUR<br>ITEMS ENABLED</span></div><div class="profile-metric"><strong>5</strong><span>SELF-REPORTED<br>PURCHASES AVOIDED</span></div></div><p class="profile-note">Your next return is due Nov 10. Thanks for keeping creative tools in motion.</p><button class="button dark" onclick="closeProfile();go('myloop')">Open My Once More →</button></aside>
 
-  <section id="home" class="view active"><div class="hero"><div class="hero-copy"><div class="eyebrow">MassArt's sharing platform</div><h1>Good things are meant to <span class="blue">go around.</span></h1><p class="lead">Borrow what you need. Share what you have. Keep resources in use and out of waste.</p><div class="search"><input placeholder="What do you need for your next project?" onkeydown="if(event.key==='Enter')go('explore')"><button class="button" onclick="go('explore')">Search</button></div><div class="hero-actions"><button class="button dark" onclick="go('explore')">Find Something to Borrow →</button><button class="button light" onclick="go('share')">Share an Item</button></div></div><div class="hero-art"><img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1000&q=85" alt="Camera equipment in a creative studio"><div class="floating"><strong>268</strong>items currently moving between MassArt makers</div></div></div>
+  <section id="home" class="view active"><div class="hero"><div class="hero-copy"><div class="eyebrow">MassArt's sharing platform</div><h1>Good things are meant to <span class="blue">go around.</span></h1><p class="lead">Borrow what you need. Share what you have. Keep resources in use and out of waste.</p><div class="makeit"><div class="makeit-q">I'm making a <span class="makeit-word" id="makeit-word"></span><i class="makeit-caret"></i></div><div class="makeit-tiles" id="makeit-tiles"></div><button class="makeit-share" onclick="go('share')">Have something to give? <b>Share an item →</b></button></div></div><div class="hero-art"><img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1000&q=85" alt="Camera equipment in a creative studio"><div class="floating"><strong>268</strong>items currently moving between MassArt makers</div></div></div>
   <div class="section"><div class="section-head"><div><div class="eyebrow">A better default</div><h2>Why buy when you can borrow?</h2></div></div><div class="compare"><div><div class="eyebrow">Temporary ownership</div><h3>Buy it for one project.</h3><p>Spend more, store more, and let useful materials sit idle when the project is over.</p></div><div><div class="eyebrow">Shared resource</div><h3>Keep it moving.</h3><p>Use what exists, return it when you're done, and make space for the next creative idea.</p><button class="button" onclick="go('share')">List something you have</button></div></div></div>
   <div class="section"><div class="eyebrow">The circular practice</div><div class="cycle"><div class="cycle-node">Share an item</div><span class="arrow">→</span><div class="cycle-node">Borrow it</div><span class="arrow">→</span><div class="cycle-node">Use it</div><span class="arrow">→</span><div class="cycle-node">Return it</div><span class="arrow">→</span><div class="cycle-node">Share again</div></div></div>
   <div class="section impact"><div><div class="eyebrow" style="color:var(--yellow)">This semester at MassArt</div><h2>Useful things,<br>still in use.</h2><p>Every completed borrow records a real moment of reuse—not a promise, a practice.</p></div><div class="stats"><div class="stat"><strong>1,284</strong><span>completed borrows</span></div><div class="stat"><strong>268</strong><span>items in circulation</span></div><div class="stat"><strong>76%</strong><span>borrowers reported avoiding a purchase*</span></div><div class="stat"><strong>12.4×</strong><span>average item reuse</span></div></div></div>
@@ -498,5 +516,22 @@ window.openReturnModal=function(){_or();const btn=modal.querySelector('.button.d
   btn.disabled=false;hint.classList.add('ok');window.__returnProof=url}
  input.addEventListener('change',()=>setFile(input.files[0]));
  ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag')}));['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('drag')}));drop.addEventListener('drop',e=>setFile(e.dataTransfer.files[0]))};
+})();
+
+// hero picker: typed "I'm making a ___" word lights the matching category tile
+(function(){
+const tilesEl=document.getElementById('makeit-tiles'),wordEl=document.getElementById('makeit-word');if(!tilesEl||!wordEl)return;
+const cats=[['Cameras','#ffd34d'],['Art Supplies','#ff8a5c'],['Tools','#7fd1a8'],['Electronics','#2fb3ff'],['Books','#ffd34d'],['Studio Equipment','#ff8a5c']];
+const words=[['photo shoot',0],['poster series',1],['wooden prototype',2],['motion piece',3],['zine',4],['portrait set',5]];
+tilesEl.innerHTML=cats.map(([c,col],i)=>{const n=items.filter(x=>x.cat===c).length;return `<button class="mk-tile" style="--c:${col}" data-i="${i}"><strong>${c}</strong><small>${n} item${n===1?'':'s'} ready</small><i>→</i></button>`}).join('');
+const tiles=[...tilesEl.children];
+tiles.forEach((t,i)=>t.onclick=()=>{const inp=document.querySelector('#explore .search input');if(inp){inp.value=cats[i][0];inp.dispatchEvent(new Event('input',{bubbles:true}))}go('explore')});
+let w=0,ch=0,del=false,hold=0;
+function tick(){const full=words[w][0];
+ if(hold){hold--;return setTimeout(tick,60)}
+ if(!del){ch++;wordEl.textContent=full.slice(0,ch);tiles.forEach((t,i)=>t.classList.toggle('lit',i===words[w][1]));if(ch===full.length){del=true;hold=22}}
+ else{ch--;wordEl.textContent=full.slice(0,ch);if(ch===0){del=false;w=(w+1)%words.length;tiles.forEach(t=>t.classList.remove('lit'))}}
+ setTimeout(tick,del?38:85)}
+tick();
 })();
 </script></body></html>
